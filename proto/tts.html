@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prototipo TTS · Sprachlabor</title>
+<link rel="stylesheet" href="../style.css">
+<style>
+  main { max-width: 680px; margin: 0 auto; padding: 16px; }
+  pre { white-space: pre-wrap; font-size: .8rem; background: var(--surface-2); padding: 10px; border-radius: 10px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 8px 0; }
+  select { padding: 8px; border-radius: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Prototipo: voz en el navegador</h1>
+  <p class="muted small">Mide Piper (ONNX en el navegador, voz thorsten-medium) y la voz alemana del sistema (Web Speech API).
+    No reproduce nada solo: cada audio tiene su botón.</p>
+
+  <section class="card">
+    <h2>A · Piper en el navegador</h2>
+    <p class="muted small">Primera vez: baja la voz (~60 MB) a la caché del navegador (OPFS). Después queda guardada.</p>
+    <div class="row">
+      <button class="btn primary" id="piper-run">Bajar voz y sintetizar 5 frases</button>
+      <span id="piper-st" class="muted small"></span>
+    </div>
+    <div id="piper-out"></div>
+  </section>
+
+  <section class="card">
+    <h2>B · Voz alemana del sistema (Android / Windows)</h2>
+    <div class="row">
+      <select id="voces"></select>
+      <button class="btn" id="ws-run">Hablar una frase</button>
+      <span id="ws-st" class="muted small"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Resultados</h2>
+    <pre id="res">(todavía nada)</pre>
+    <button class="btn sm" id="copiar">Copiar resultados</button>
+  </section>
+</main>
+<script type="module">
+const FRASES = [
+  "Jetzt lerne ich jeden Tag zwanzig Minuten Deutsch.",
+  "Gestern bin ich mit dem Zug nach Köln gefahren.",
+  "Der Zug nach München fährt heute um siebzehn Uhr fünfundvierzig ab.",
+  "Auf dem Hügel stehen zwölf neue Windräder.",
+  "Die Übung ist schwierig, aber sehr nützlich.",
+];
+const res = { ua: navigator.userAgent, cores: navigator.hardwareConcurrency, memoria_gb: navigator.deviceMemory, piper: null, sistema: null };
+window.__res = res;
+const $ = (s) => document.querySelector(s);
+const show = () => { $("#res").textContent = JSON.stringify(res, null, 1); };
+$("#copiar").onclick = () => navigator.clipboard.writeText(JSON.stringify(res, null, 1));
+
+// ---------- A · Piper ----------
+$("#piper-run").onclick = async () => {
+  const st = $("#piper-st");
+  const out = $("#piper-out");
+  $("#piper-run").disabled = true;
+  res.piper = { estado: "cargando librería" };
+  show();
+  try {
+    const t0 = performance.now();
+    const tts = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.3/+esm");
+    res.piper.libreria_ms = Math.round(performance.now() - t0);
+    const voiceId = "de_DE-thorsten-medium";
+    const t1 = performance.now();
+    let ultimo = 0;
+    await tts.download(voiceId, (p) => {
+      ultimo = p.total || ultimo;
+      st.textContent = `bajando voz… ${Math.round((p.loaded || 0) / 1e6)} / ${Math.round((p.total || 0) / 1e6)} MB`;
+    });
+    res.piper.descarga_ms = Math.round(performance.now() - t1);
+    res.piper.descarga_mb = Math.round(ultimo / 1e6);
+    res.piper.frases = [];
+    for (const [i, f] of FRASES.entries()) {
+      st.textContent = `sintetizando ${i + 1}/${FRASES.length}…`;
+      const t = performance.now();
+      const wav = await tts.predict({ text: f, voiceId });
+      const ms = Math.round(performance.now() - t);
+      const url = URL.createObjectURL(wav);
+      const audio = new Audio(url);
+      await new Promise((r) => { audio.onloadedmetadata = r; audio.onerror = r; });
+      const dur = audio.duration;
+      res.piper.frases.push({ frase: f, ms, segundos_audio: Math.round(dur * 10) / 10, rtf: dur ? Math.round(ms / dur / 10) / 100 : null, kb: Math.round(wav.size / 1024) });
+      out.insertAdjacentHTML("beforeend", `<p><button class="btn sm" data-u="${url}">▶</button> ${f} <span class="muted small">${ms} ms · ${Math.round(dur * 10) / 10} s</span></p>`);
+      show();
+    }
+    out.querySelectorAll("[data-u]").forEach((b) => (b.onclick = () => new Audio(b.dataset.u).play()));
+    const ms = res.piper.frases.map((x) => x.ms);
+    res.piper.promedio_ms = Math.round(ms.reduce((a, b) => a + b, 0) / ms.length);
+    res.piper.primera_ms = ms[0];
+    res.piper.estado = "ok";
+    st.textContent = "listo";
+  } catch (e) {
+    res.piper.estado = "error";
+    res.piper.error = String(e && e.message || e);
+    st.textContent = "falló: " + res.piper.error;
+  }
+  show();
+  $("#piper-run").disabled = false;
+};
+
+// ---------- B · Web Speech ----------
+function cargarVoces() {
+  const voces = speechSynthesis.getVoices();
+  const de = voces.filter((v) => v.lang && v.lang.toLowerCase().startsWith("de"));
+  const sel = $("#voces");
+  sel.innerHTML = de.length ? de.map((v, i) => `<option value="${i}">${v.name} (${v.lang}${v.localService ? ", local" : ", red"})</option>`).join("")
+    : `<option value="">(sin voz alemana instalada)</option>`;
+  res.sistema = { voces_total: voces.length, voces_de: de.map((v) => ({ nombre: v.name, lang: v.lang, local: v.localService })) };
+  show();
+  return de;
+}
+if ("speechSynthesis" in window) {
+  speechSynthesis.onvoiceschanged = cargarVoces;
+  cargarVoces();
+} else {
+  res.sistema = { error: "sin speechSynthesis" };
+  show();
+}
+$("#ws-run").onclick = () => {
+  const de = cargarVoces();
+  const v = de[+$("#voces").value];
+  if (!v) { $("#ws-st").textContent = "no hay voz alemana"; return; }
+  const u = new SpeechSynthesisUtterance(FRASES[1]);
+  u.voice = v;
+  u.lang = v.lang;
+  u.rate = 0.9;
+  const t = performance.now();
+  u.onstart = () => { res.sistema.arranque_ms = Math.round(performance.now() - t); show(); };
+  u.onend = () => { res.sistema.duracion_ms = Math.round(performance.now() - t); $("#ws-st").textContent = "listo"; show(); };
+  u.onerror = (e) => { res.sistema.error = e.error; $("#ws-st").textContent = "error: " + e.error; show(); };
+  $("#ws-st").textContent = "hablando…";
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+};
+show();
+</script>
+</body>
+</html>
