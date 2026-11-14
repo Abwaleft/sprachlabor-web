@@ -1,0 +1,4 @@
+# Solo para correr las pruebas (la app no necesita Python).
+pytest>=8
+pytest-playwright>=0.5
+playwright>=1.47

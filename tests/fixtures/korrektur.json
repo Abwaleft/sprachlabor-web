@@ -1,0 +1,16 @@
+{
+  "corregido": "Hallo zusammen, leider kann ich am Samstag nicht kommen, weil ich arbeiten muss. Nächste Woche laufe ich wieder mit. Vielleicht können wir am Sonntag um neun Uhr laufen?",
+  "errores": [
+    {"patron": 1, "fragmento": "leider ich kann", "correccion": "leider kann ich",
+     "explicacion": "Después de «leider» el verbo va en segunda posición y el sujeto después."},
+    {"patron": 1, "fragmento": "weil ich muss arbeiten", "correccion": "weil ich arbeiten muss",
+     "explicacion": "En la subordinada con «weil» el verbo conjugado va al final."},
+    {"patron": 3, "fragmento": "in Sonntag", "correccion": "am Sonntag",
+     "explicacion": "Los días de la semana llevan «am» (an + dem)."}
+  ],
+  "comentario": "Cubriste los tres puntos y la extensión está bien. Lo más importante: el verbo en segunda posición después de «leider» y al final con «weil».",
+  "nivel_estimado": "A2",
+  "version_b1": "Hallo zusammen, am Samstag kann ich leider nicht mitlaufen, weil ich arbeiten muss. Ab nächster Woche bin ich wieder dabei. Wie wäre es mit einem Lauf am Sonntag um neun?",
+  "nivel_siguiente": "A2+",
+  "motivo_nivel": "Marcó «Bien», cubrió los puntos y la extensión; los errores son de V2, el patrón que estamos trabajando: subo un nivel."
+}

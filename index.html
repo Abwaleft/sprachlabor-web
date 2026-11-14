@@ -1,16 +1,29 @@
 <!doctype html>
 <html lang="es">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sprachlabor · prototipos</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f5f5c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>Sprachlabor</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230f5f5c'/%3E%3Ctext x='16' y='22' font-size='16' font-family='sans-serif' font-weight='700' text-anchor='middle' fill='white'%3ESL%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<main style="max-width:680px;margin:0 auto;padding:16px">
-  <h1>Sprachlabor · prototipos del modo celular</h1>
-  <p class="muted">Páginas de medición (hito C1). Cada una mide sola y tiene «Copiar resultados».</p>
-  <p><a class="btn primary" href="proto/tts.html">Voz en el navegador (Piper + voz del sistema)</a></p>
-  <p><a class="btn primary" href="proto/stt.html">Reconocimiento de voz en el navegador (Whisper)</a></p>
-</main>
+  <header class="top">
+    <a href="#/" class="brand"><span class="logo">SL</span> Sprachlabor</a>
+    <span class="topbtns">
+      <button id="ayuda" class="btn sm" title="Atajos de teclado (tecla ?)" aria-label="Atajos de teclado">?</button>
+      <a id="opc" class="btn sm" href="#/opciones" title="Opciones">⚙</a>
+      <a id="datos-btn" class="btn sm" href="#/datos" title="Datos, copias y voz">💾</a>
+    </span>
+  </header>
+  <div id="conexion" class="banner" hidden></div>
+  <main id="app"><p class="muted center">Cargando…</p></main>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "corregido": {"type": "string", "description": "El texto de Victor corregido, cambiando lo mínimo necesario."},
+    "errores": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "patron": {"type": "integer", "minimum": 1, "maximum": 5},
+          "fragmento": {"type": "string"},
+          "correccion": {"type": "string"},
+          "explicacion": {"type": "string"}
+        },
+        "required": ["patron", "fragmento", "correccion", "explicacion"]
+      }
+    },
+    "comentario": {"type": "string", "description": "2–3 frases en español: qué estuvo bien, qué mejorar, si cumplió la consigna."},
+    "nivel_estimado": {"type": "string", "enum": ["A1", "A2", "B1", "B2"]},
+    "version_b1": {"type": "string", "description": "Una versión natural de nivel B1 del mismo contenido, para leer y escuchar como modelo."},
+    "nivel_siguiente": {"type": "string", "enum": ["A2", "A2+", "B1", "B1+", "B2"],
+      "description": "Nivel de la próxima consigna de este tipo, decidido con la dificultad que marcó Victor Y con la calidad real de esta respuesta. Como máximo un nivel de diferencia con el nivel de la consigna."},
+    "motivo_nivel": {"type": "string", "description": "Una frase en español: por qué ese nivel (qué pesó: percepción, errores, extensión, puntos cubiertos)."}
+  },
+  "required": ["corregido", "errores", "comentario", "nivel_estimado", "version_b1", "nivel_siguiente", "motivo_nivel"]
+}

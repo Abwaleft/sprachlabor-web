@@ -350,3 +350,9 @@ table.tbl th { color: var(--muted); font-weight: 600; }
   .plan-btn { grid-template-columns: 64px 1fr; }
   .plan-btn small { grid-column: 2; }
 }
+
+/* ---- modo celular (app autocontenida) ---- */
+.opt.sel { outline: 2px solid var(--accent); outline-offset: -2px; }
+label.btn input[type=file] { display: none; }
+.hero h1 { margin: 2px 0 6px; }
+code { font-size: .9em; background: var(--surface-2); padding: 1px 5px; border-radius: 6px; }

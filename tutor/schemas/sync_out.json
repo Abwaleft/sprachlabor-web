@@ -1,0 +1,201 @@
+{
+  "type": "object",
+  "properties": {
+    "resumen": {
+      "type": "string",
+      "description": "2 a 5 frases en español rioplatense: qué salió bien, qué conviene practicar y por qué el lote es así."
+    },
+    "feedback": {
+      "type": "array",
+      "description": "Una corrección por cada id de corregir_intentos (Schreiben o Sprechen frei). Vacío si no hay.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "intento_id": {"type": "integer"},
+          "corregido": {"type": "string"},
+          "comentario": {"type": "string", "description": "2–3 frases en español: qué estuvo bien, qué mejorar, si cumplió la consigna."},
+          "nivel_estimado": {"type": "string", "enum": ["A1", "A2", "B1", "B2"]},
+          "version_b1": {"type": "string", "description": "Versión natural de nivel B1 del mismo contenido."},
+          "errores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "patron": {"type": "integer", "minimum": 1, "maximum": 5},
+                "fragmento": {"type": "string"},
+                "correccion": {"type": "string"},
+                "explicacion": {"type": "string"}
+              },
+              "required": ["patron", "fragmento", "correccion", "explicacion"]
+            }
+          }
+        },
+        "required": ["intento_id", "corregido", "comentario", "nivel_estimado", "version_b1", "errores"]
+      }
+    },
+    "perfil": {
+      "type": "object",
+      "properties": {
+        "niveles": {
+          "type": "object",
+          "properties": {
+            "lesen": {"type": "string"},
+            "hoeren": {"type": "string"},
+            "schreiben": {"type": "string"},
+            "sprechen": {"type": "string"}
+          },
+          "required": ["lesen", "hoeren", "schreiben", "sprechen"]
+        },
+        "patrones": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "properties": {
+              "patron": {"type": "integer", "minimum": 1, "maximum": 5},
+              "peso": {"type": "number", "minimum": 0, "maximum": 1},
+              "nota": {"type": "string"}
+            },
+            "required": ["patron", "peso", "nota"]
+          }
+        },
+        "progreso_b1": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Estimación global (%) del camino hacia Goethe B1."
+        }
+      },
+      "required": ["niveles", "patrones", "progreso_b1"]
+    },
+    "nivel_consignas": {
+      "type": "object",
+      "description": "Nivel decidido para las próximas consignas de cada tipo, con la dificultad que marcó Victor Y la calidad real de sus respuestas. Las consignas del lote se reparten alrededor de este nivel.",
+      "properties": {
+        "schreiben": {
+          "type": "object",
+          "properties": {
+            "nivel": {"type": "string", "enum": ["A2", "A2+", "B1", "B1+", "B2"]},
+            "motivo": {"type": "string"}
+          },
+          "required": ["nivel", "motivo"]
+        },
+        "sprechen": {
+          "type": "object",
+          "properties": {
+            "nivel": {"type": "string", "enum": ["A2", "A2+", "B1", "B1+", "B2"]},
+            "motivo": {"type": "string"}
+          },
+          "required": ["nivel", "motivo"]
+        }
+      },
+      "required": ["schreiben", "sprechen"]
+    },
+    "palabras_nuevas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "wort": {"type": "string", "description": "Sin artículo. Sustantivos con mayúscula."},
+          "artikel": {"type": "string", "enum": ["der", "die", "das", ""]},
+          "formen": {
+            "type": "string",
+            "description": "Nomen: plural con artículo (die Anlagen) o '—' si no tiene. Verb: 3.ª persona – Präteritum – Perfekt (fährt – fuhr – ist gefahren). Otros: vacío."
+          },
+          "wortart": {"type": "string", "enum": ["Nomen", "Verb", "Adjektiv", "Adverb", "Präposition", "Ausdruck", "Andere"]},
+          "es": {"type": "string", "description": "Traducción al español."},
+          "beispiel_de": {"type": "string"},
+          "beispiel_es": {"type": "string"},
+          "tema": {"type": "string"}
+        },
+        "required": ["wort", "artikel", "formen", "wortart", "es", "beispiel_de", "beispiel_es", "tema"]
+      }
+    },
+    "lote": {
+      "type": "object",
+      "properties": {
+        "hoeren": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text_de": {"type": "string"},
+              "frage_es": {"type": "string"},
+              "optionen_es": {"type": "array", "items": {"type": "string"}, "minItems": 3, "maxItems": 4},
+              "richtig": {"type": "integer", "minimum": 0, "maximum": 3, "description": "Índice (desde 0) de la opción correcta."},
+              "erklaerung_es": {"type": "string"},
+              "tema": {"type": "string"},
+              "niveau": {"type": "string", "enum": ["A2", "B1"]}
+            },
+            "required": ["text_de", "frage_es", "optionen_es", "richtig", "erklaerung_es", "tema", "niveau"]
+          }
+        },
+        "diktat": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text_de": {"type": "string"},
+              "schwerpunkt": {"type": "string", "description": "Qué practica: patrón o sonido."},
+              "tema": {"type": "string"}
+            },
+            "required": ["text_de", "schwerpunkt", "tema"]
+          }
+        },
+        "vorlesen": {
+          "type": "array",
+          "description": "Frases para leer en voz alta (pronunciación).",
+          "items": {
+            "type": "object",
+            "properties": {
+              "text_de": {"type": "string"},
+              "schwerpunkt": {"type": "string", "description": "Sonidos que practica (z, ü, ch, sch, ie/ei…)."},
+              "tema": {"type": "string"}
+            },
+            "required": ["text_de", "schwerpunkt", "tema"]
+          }
+        },
+        "schreiben": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "titulo": {"type": "string"},
+              "nivel": {"type": "string", "enum": ["A2", "A2+", "B1", "B1+", "B2"]},
+              "tipo": {"type": "string", "enum": ["E-Mail informell", "E-Mail formell", "Forumsbeitrag", "Nachricht", "Text"]},
+              "consigna_de": {"type": "string"},
+              "consigna_es": {"type": "string"},
+              "puntos": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 4},
+              "palabras_min": {"type": "integer", "minimum": 20, "maximum": 150},
+              "palabras_max": {"type": "integer", "minimum": 30, "maximum": 200},
+              "ayuda": {"type": "array", "items": {"type": "string"}, "maxItems": 3,
+                        "description": "Hasta 3 pistas de 1–3 palabras: saludo, conector o arranque (Meiner Meinung nach …, deshalb). Nunca frases armadas."},
+              "tema": {"type": "string"}
+            },
+            "required": ["titulo", "nivel", "tipo", "consigna_de", "consigna_es", "puntos", "palabras_min", "palabras_max", "ayuda", "tema"]
+          }
+        },
+        "sprechen": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "titulo": {"type": "string"},
+              "nivel": {"type": "string", "enum": ["A2", "A2+", "B1", "B1+", "B2"]},
+              "consigna_de": {"type": "string"},
+              "consigna_es": {"type": "string"},
+              "puntos": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 4},
+              "duracion_s": {"type": "integer", "minimum": 30, "maximum": 120},
+              "ayuda": {"type": "array", "items": {"type": "string"}, "maxItems": 6},
+              "tema": {"type": "string"}
+            },
+            "required": ["titulo", "nivel", "consigna_de", "consigna_es", "puntos", "duracion_s", "ayuda", "tema"]
+          }
+        }
+      },
+      "required": ["hoeren", "diktat", "vorlesen", "schreiben", "sprechen"]
+    }
+  },
+  "required": ["resumen", "feedback", "perfil", "nivel_consignas", "palabras_nuevas", "lote"]
+}

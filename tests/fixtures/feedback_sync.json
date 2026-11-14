@@ -1,0 +1,15 @@
+{
+  "intento_id": 0,
+  "corregido": "Gestern bin ich in die Stadt gegangen und dann habe ich einen Kaffee getrunken.",
+  "comentario": "Se entiende todo y usaste bien el Perfekt. Lo que falta es el verbo en segunda posición después de «gestern» y «dann».",
+  "nivel_estimado": "A2",
+  "version_b1": "Gestern bin ich in die Stadt gefahren. Danach habe ich in einem kleinen Café einen Kaffee getrunken.",
+  "errores": [
+    {"patron": 1, "fragmento": "gestern ich bin", "correccion": "gestern bin ich",
+     "explicacion": "Con un complemento al principio, el verbo va segundo: Gestern bin ich…"},
+    {"patron": 1, "fragmento": "dann ich habe", "correccion": "dann habe ich",
+     "explicacion": "Lo mismo después de «dann»."},
+    {"patron": 3, "fragmento": "ein Kaffee", "correccion": "einen Kaffee",
+     "explicacion": "Objeto directo masculino: acusativo «einen»."}
+  ]
+}

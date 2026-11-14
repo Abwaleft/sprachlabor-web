@@ -1,0 +1,86 @@
+{
+  "resumen": "Respuesta grabada para pruebas: lote chico y variado, sin intentos previos. Foco en V2, Perfekt y números.",
+  "feedback": [],
+  "perfil": {
+    "niveles": {
+      "lesen": "A2, B1 en construcción",
+      "hoeren": "A2 (números flojos)",
+      "schreiben": "A1+",
+      "sprechen": "A2 en contenido, A1 en gramática"
+    },
+    "patrones": [
+      {"patron": 1, "peso": 1.0, "nota": "jetzt lerne ich"},
+      {"patron": 2, "peso": 0.9, "nota": "bin gefahren, habe besucht"},
+      {"patron": 3, "peso": 0.8, "nota": "an der Universität"},
+      {"patron": 4, "peso": 0.8, "nota": "números al escuchar"},
+      {"patron": 5, "peso": 0.5, "nota": "z = /ts/"}
+    ],
+    "progreso_b1": 36
+  },
+  "nivel_consignas": {
+    "schreiben": {"nivel": "A2", "motivo": "Primer envío: arranca en A2."},
+    "sprechen": {"nivel": "A2+", "motivo": "Primer envío: contenido A2, gramática A1."}
+  },
+  "palabras_nuevas": [
+    {"wort": "Windrad", "artikel": "das", "formen": "die Windräder", "wortart": "Substantiv", "es": "aerogenerador",
+     "beispiel_de": "Auf dem Hügel stehen zwölf neue Windräder.", "beispiel_es": "En la colina hay doce aerogeneradores nuevos.", "tema": "Energie"},
+    {"wort": "Verspätung", "artikel": "die", "formen": "die Verspätungen", "wortart": "Substantiv", "es": "demora, retraso",
+     "beispiel_de": "Der Zug hat heute zwanzig Minuten Verspätung.", "beispiel_es": "El tren tiene hoy veinte minutos de demora.", "tema": "Reisen"},
+    {"wort": "laufen", "artikel": "", "formen": "läuft – lief – ist gelaufen", "wortart": "Verb", "es": "correr",
+     "beispiel_de": "Am Sonntag bin ich zwanzig Kilometer gelaufen.", "beispiel_es": "El domingo corrí veinte kilómetros.", "tema": "Running"},
+    {"wort": "Bahnhof", "artikel": "der", "formen": "die Bahnhöfe", "wortart": "Substantiv", "es": "estación de tren",
+     "beispiel_de": "Wir treffen uns um acht Uhr am Bahnhof.", "beispiel_es": "Nos encontramos a las ocho en la estación.", "tema": "Reisen"},
+    {"wort": "wichtig", "artikel": "", "formen": "—", "wortart": "Adjektiv", "es": "importante",
+     "beispiel_de": "Für mich ist das Training am Morgen sehr wichtig.", "beispiel_es": "Para mí el entrenamiento a la mañana es muy importante.", "tema": "Alltag"},
+    {"wort": "Prüfung", "artikel": "die", "formen": "die Prüfungen", "wortart": "Substantiv", "es": "examen",
+     "beispiel_de": "Nächstes Jahr mache ich die Prüfung in Hamburg.", "beispiel_es": "El año que viene rindo el examen en Hamburgo.", "tema": "Studium"},
+    {"wort": "Erzeugung", "artikel": "die", "formen": "—", "wortart": "Substantiv", "es": "generación (de energía)",
+     "beispiel_de": "Die Erzeugung von Windstrom ist im Winter höher.", "beispiel_es": "La generación eólica es mayor en invierno.", "tema": "Energie"},
+    {"wort": "besuchen", "artikel": "", "formen": "besucht – besuchte – hat besucht", "wortart": "Verb", "es": "visitar",
+     "beispiel_de": "Letztes Jahr habe ich meine Tante in Köln besucht.", "beispiel_es": "El año pasado visité a mi tía en Colonia.", "tema": "Reisen"},
+    {"wort": "Treppe", "artikel": "die", "formen": "die Treppen", "wortart": "Substantiv", "es": "escalera",
+     "beispiel_de": "Nach dem Lauf nehme ich lieber den Aufzug als die Treppe.", "beispiel_es": "Después de correr prefiero el ascensor a la escalera.", "tema": "Alltag"},
+    {"wort": "Rechnung", "artikel": "die", "formen": "die Rechnungen", "wortart": "Substantiv", "es": "cuenta, factura",
+     "beispiel_de": "Die Rechnung bezahlen wir heute zusammen.", "beispiel_es": "La cuenta la pagamos hoy juntos.", "tema": "Alltag"},
+    {"wort": "Geschwindigkeit", "artikel": "die", "formen": "die Geschwindigkeiten", "wortart": "Substantiv", "es": "velocidad",
+     "beispiel_de": "Bei dieser Geschwindigkeit dreht sich das Windrad nicht.", "beispiel_es": "A esta velocidad el aerogenerador no gira.", "tema": "Physik"},
+    {"wort": "müde", "artikel": "", "formen": "—", "wortart": "Adjektiv", "es": "cansado",
+     "beispiel_de": "Nach dem langen Lauf war ich sehr müde.", "beispiel_es": "Después de la carrera larga estaba muy cansado.", "tema": "Running"}
+  ],
+  "lote": {
+    "hoeren": [
+      {"text_de": "Achtung am Gleis drei: Der Zug nach München fährt heute um siebzehn Uhr fünfundvierzig ab.",
+       "frage_es": "¿A qué hora sale el tren a Múnich?", "optionen_es": ["15:45", "17:45", "17:15"], "richtig": 1,
+       "erklaerung_es": "Dice «um siebzehn Uhr fünfundvierzig», o sea 17:45.", "niveau": "A2"},
+      {"text_de": "Hallo Victor, hier ist Anna. Das Training morgen beginnt schon um halb sieben, nicht um sieben. Bis dann!",
+       "frage_es": "¿A qué hora empieza el entrenamiento?", "optionen_es": ["6:30", "7:00", "7:30"], "richtig": 0,
+       "erklaerung_es": "«halb sieben» es 6:30.", "niveau": "A2"},
+      {"text_de": "Die neue Windkraftanlage hat eine Leistung von vier Megawatt und wurde letzte Woche in Betrieb genommen.",
+       "frage_es": "¿Qué potencia tiene la instalación?", "optionen_es": ["4 MW", "14 MW", "40 MW"], "richtig": 0,
+       "erklaerung_es": "«vier Megawatt».", "niveau": "B1"}
+    ],
+    "diktat": [
+      {"text_de": "Jetzt lerne ich jeden Tag zwanzig Minuten Deutsch.", "schwerpunkt": "V2 con inversión, z = /ts/"},
+      {"text_de": "Gestern bin ich mit dem Zug nach Köln gefahren.", "schwerpunkt": "Perfekt con sein"},
+      {"text_de": "Die Übung ist schwierig, aber sehr nützlich.", "schwerpunkt": "ü, sch, ie"}
+    ],
+    "vorlesen": [
+      {"text_de": "Im Januar ist es in Zürich ziemlich kalt.", "schwerpunkt": "j, z, ü"},
+      {"text_de": "Ich möchte jetzt ein Stück Schokolade.", "schwerpunkt": "ch, ö, sch"}
+    ],
+    "schreiben": [
+      {"titulo": "Lauftreff am Samstag", "nivel": "A2", "tipo": "Nachricht", "tema": "Running",
+       "consigna_de": "Schreiben Sie Ihrer Laufgruppe eine kurze Nachricht: Sie können am Samstag nicht kommen.",
+       "consigna_es": "Escribile a tu grupo de running un mensaje corto: el sábado no podés ir.",
+       "puntos": ["Warum nicht?", "Wann laufen Sie wieder mit?", "Ein Vorschlag"],
+       "palabras_min": 25, "palabras_max": 45, "ayuda": ["Hallo zusammen,", "leider", "deshalb"]}
+    ],
+    "sprechen": [
+      {"titulo": "Mein Arbeitsweg", "nivel": "A2+", "tema": "Alltag", "duracion_s": 45,
+       "consigna_de": "Beschreiben Sie Ihren Weg zur Arbeit.",
+       "consigna_es": "Describí tu camino al trabajo (verbo en segundo lugar).",
+       "puntos": ["Wie fahren Sie?", "Wie lange dauert es?", "Was machen Sie unterwegs?"],
+       "ayuda": ["Zuerst …", "Dann …", "Unterwegs …"]}
+    ]
+  }
+}
