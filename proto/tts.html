@@ -22,7 +22,9 @@
     <h2>A · Piper en el navegador</h2>
     <p class="muted small">Primera vez: baja la voz (~60 MB) a la caché del navegador (OPFS). Después queda guardada.</p>
     <div class="row">
+      <label>Voz <select id="voz"><option value="de_DE-thorsten-medium">thorsten-medium (63 MB)</option><option value="de_DE-thorsten-low">thorsten-low (más chica)</option><option value="de_DE-mls-medium">mls-medium</option></select></label>
       <button class="btn primary" id="piper-run">Bajar voz y sintetizar 5 frases</button>
+      <button class="btn" id="piper-flush">Borrar voces guardadas</button>
       <span id="piper-st" class="muted small"></span>
     </div>
     <div id="piper-out"></div>
@@ -68,7 +70,8 @@ $("#piper-run").onclick = async () => {
     const t0 = performance.now();
     const tts = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.3/+esm");
     res.piper.libreria_ms = Math.round(performance.now() - t0);
-    const voiceId = "de_DE-thorsten-medium";
+    const voiceId = $("#voz").value;
+    res.piper.voz = voiceId;
     const t1 = performance.now();
     let ultimo = 0;
     await tts.download(voiceId, (p) => {
@@ -77,6 +80,18 @@ $("#piper-run").onclick = async () => {
     });
     res.piper.descarga_ms = Math.round(performance.now() - t1);
     res.piper.descarga_mb = Math.round(ultimo / 1e6);
+    try {  // qué quedó realmente guardado (OPFS): nombre y tamaño
+      const guardadas = await tts.stored();
+      res.piper.guardadas = guardadas;
+      const raiz = await navigator.storage.getDirectory();
+      const archivos = [];
+      for await (const [nombre, h] of raiz.entries()) {
+        if (h.kind === "file") archivos.push({ nombre, mb: Math.round((await h.getFile()).size / 1e5) / 10 });
+        else { for await (const [n2, h2] of h.entries()) if (h2.kind === "file") archivos.push({ nombre: `${nombre}/${n2}`, mb: Math.round((await h2.getFile()).size / 1e5) / 10 }); }
+      }
+      res.piper.opfs = archivos;
+    } catch (e) { res.piper.opfs = "sin acceso: " + (e.message || e); }
+    show();
     res.piper.frases = [];
     for (const [i, f] of FRASES.entries()) {
       st.textContent = `sintetizando ${i + 1}/${FRASES.length}…`;
@@ -104,6 +119,14 @@ $("#piper-run").onclick = async () => {
   }
   show();
   $("#piper-run").disabled = false;
+};
+
+$("#piper-flush").onclick = async () => {
+  try {
+    const tts = await import("https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.3/+esm");
+    await tts.flush();
+    $("#piper-st").textContent = "voces borradas; volvé a bajar";
+  } catch (e) { $("#piper-st").textContent = "no pude borrar: " + (e.message || e); }
 };
 
 // ---------- B · Web Speech ----------
