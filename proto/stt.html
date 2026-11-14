@@ -73,21 +73,47 @@ else {
   $("#modelo").querySelector('[value="wav2vec2-de"]').disabled = true;
   $("#modelo").value = "Xenova/whisper-base";
 }
-let grabado = null;
+let grabado = null;   // { audio: Float32Array a 16 kHz, segundos }  (PCM directo: Chrome Android no decodifica sus propios webm)
+function wavDe(f32, sr = 16000) {
+  const b = new ArrayBuffer(44 + f32.length * 2);
+  const v = new DataView(b);
+  const w = (o, str) => { for (let i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + f32.length * 2, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true);
+  v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true);
+  v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, "data"); v.setUint32(40, f32.length * 2, true);
+  for (let i = 0; i < f32.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, f32[i])) * 32767, true);
+  return new Blob([b], { type: "audio/wav" });
+}
 $("#rec").onclick = async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const rec = new MediaRecorder(stream);
-    const chunks = [];
-    rec.ondataavailable = (e) => chunks.push(e.data);
-    rec.start();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    const sr = ctx.sampleRate;  // algunos Android ignoran el pedido y dan 48000: se remuestrea después
+    const src = ctx.createMediaStreamSource(stream);
+    const proc = ctx.createScriptProcessor(4096, 1, 1);
+    const trozos = [];
+    proc.onaudioprocess = (e) => trozos.push(new Float32Array(e.inputBuffer.getChannelData(0)));
+    src.connect(proc);
+    proc.connect(ctx.destination);
     $("#rec").disabled = true;
     for (let s = 15; s > 0; s--) { $("#rec-st").textContent = `grabando… ${s} s (hablá en alemán)`; await new Promise((r) => setTimeout(r, 1000)); }
-    await new Promise((r) => { rec.onstop = r; rec.stop(); });
-    stream.getTracks().forEach((t) => t.stop());
-    grabado = new Blob(chunks, { type: rec.mimeType || "audio/webm" });
-    $("#rec-st").innerHTML = `listo (${Math.round(grabado.size / 1024)} kB) <button class="btn sm" id="oir">▶</button>`;
-    $("#oir").onclick = () => new Audio(URL.createObjectURL(grabado)).play();
+    proc.disconnect(); src.disconnect(); stream.getTracks().forEach((t) => t.stop()); await ctx.close();
+    let n = trozos.reduce((a, t) => a + t.length, 0);
+    let pcm = new Float32Array(n);
+    let o = 0;
+    for (const t of trozos) { pcm.set(t, o); o += t.length; }
+    if (sr !== 16000) {  // remuestreo lineal simple
+      const ratio = sr / 16000;
+      const out = new Float32Array(Math.floor(pcm.length / ratio));
+      for (let i = 0; i < out.length; i++) { const x = i * ratio; const j = Math.floor(x); out[i] = pcm[j] + (pcm[Math.min(j + 1, pcm.length - 1)] - pcm[j]) * (x - j); }
+      pcm = out;
+    }
+    grabado = { audio: pcm, segundos: Math.round(pcm.length / 1600) / 10, sr };
+    res.grabacion = { sr_captura: sr, segundos: grabado.segundos, pico: Math.round(pcm.reduce((a, v) => Math.max(a, Math.abs(v)), 0) * 100) / 100 };
+    const wav = wavDe(pcm);
+    $("#rec-st").innerHTML = `listo (${grabado.segundos} s, pico ${res.grabacion.pico}) <button class="btn sm" id="oir">▶</button>`;
+    $("#oir").onclick = () => new Audio(URL.createObjectURL(wav)).play();
+    show();
   } catch (e) { $("#rec-st").textContent = "micrófono: " + (e.message || e); }
   $("#rec").disabled = false;
 };
@@ -132,7 +158,7 @@ async function transcribir(nombre, blob) {
   $("#st").textContent = "cargando modelo…";
   const p = await cargar(modelo, device);
   $("#st").textContent = "decodificando audio…";
-  const { audio, segundos } = await decodificar(blob);
+  const { audio, segundos } = blob instanceof Blob ? await decodificar(blob) : blob;  // PCM ya listo o archivo
   $("#st").textContent = `transcribiendo ${nombre} (${segundos} s)…`;
   const t = performance.now();
   const opts = modelo.includes("whisper") ? { language: "german", task: "transcribe", chunk_length_s: 30 } : {};
